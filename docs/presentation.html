@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectoire — project deck</title>
+<style>
+  :root {
+    --paper: #f7f6f3;
+    --surface: #ffffff;
+    --raised: #efede7;
+    --ink: #1c1917;
+    --muted: #57534e;
+    --faint: #857f77;
+    --line: #e6e3dc;
+    --accent: #b45309;
+    --accent-deep: #92400e;
+    --accent-soft: #fdf3e7;
+    --backdrop: #e7e4dd;
+    --shadow: 0 1px 2px rgb(28 25 23 / 0.10), 0 16px 40px rgb(28 25 23 / 0.14);
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --radius: 18px;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur: 380ms;
+    --step-gap: 380ms;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #1a1715;
+      --surface: #24201d;
+      --raised: #2e2925;
+      --ink: #f5f0e8;
+      --muted: #cbc3b8;
+      --faint: #9b9288;
+      --line: #3d3631;
+      --accent: #e8a05a;
+      --accent-deep: #f3bd85;
+      --accent-soft: #3a2a1b;
+      --backdrop: #0f0d0c;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.5);
+    }
+  }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--backdrop);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 1280 x 720 stage, scaled to fit the window by the script below. */
+  .stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1280px;
+    height: 720px;
+    transform: translate(-50%, -50%) scale(var(--scale, 1));
+    transform-origin: center center;
+    background: var(--paper);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .progress {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: var(--line);
+    z-index: 2;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width var(--dur) var(--ease);
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    padding: 64px 88px 92px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(28px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+  }
+  .slide.is-before { transform: translateX(-28px); }
+  .slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s;
+  }
+
+  .kicker {
+    margin: 0 0 16px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 124px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    margin: 0 0 18px;
+    max-width: 1104px;
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .lead {
+    margin: 26px 0 0;
+    max-width: 920px;
+    font-size: 36px;
+    line-height: 1.28;
+  }
+  .sub {
+    margin: 0 0 26px;
+    max-width: 1000px;
+    font-size: 23px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .foot {
+    margin-top: auto;
+    font-size: 18px;
+    color: var(--faint);
+  }
+  code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+
+  .grid { display: grid; gap: 18px; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 23px;
+    font-weight: 700;
+  }
+  .card p {
+    margin: 0;
+    font-size: 18.5px;
+    line-height: 1.42;
+    color: var(--muted);
+  }
+  .card.tall { padding: 28px 28px 30px; }
+  .card.tall h3 { font-size: 30px; margin-bottom: 12px; font-family: var(--font-display); }
+  .card.tall p { font-size: 21px; }
+  .tag {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  /* Title slide */
+  .title-row { display: flex; align-items: center; gap: 34px; margin-top: 70px; }
+  .logo { width: 120px; height: 120px; flex: none; }
+  .logo .bg { fill: var(--ink); }
+  .logo .page { fill: var(--paper); }
+  .logo .corner { fill: var(--accent); }
+
+  /* Diagrams */
+  svg.diagram { display: block; width: 100%; height: auto; overflow: visible; }
+  svg.diagram.arch { width: auto; height: 404px; max-width: 100%; margin-top: 4px; }
+  .d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  .d-box.strong { stroke: var(--accent); stroke-width: 2; }
+  .d-box.optional { stroke-dasharray: 6 5; stroke: var(--faint); }
+  .d-frame { fill: var(--raised); stroke: var(--line); stroke-width: 1.5; }
+  .d-title { fill: var(--ink); font-family: var(--font-sans); font-size: 20px; font-weight: 700; }
+  .d-big { fill: var(--ink); font-family: var(--font-sans); font-size: 25px; font-weight: 700; }
+  .d-text { fill: var(--muted); font-family: var(--font-sans); font-size: 15.5px; }
+  .d-text.lg { font-size: 18px; }
+  .d-label { fill: var(--accent-deep); font-family: var(--font-sans); font-size: 16px; font-weight: 600; }
+  .d-frame-label { fill: var(--muted); font-family: var(--font-sans); font-size: 15px; font-weight: 700; letter-spacing: 0.08em; }
+  .d-line { stroke: var(--muted); stroke-width: 2; fill: none; }
+  .d-line.accent { stroke: var(--accent); }
+  .d-line.dashed { stroke-dasharray: 6 5; }
+  .d-head { fill: var(--muted); }
+  .d-head.accent { fill: var(--accent); }
+  .d-num { fill: var(--accent); }
+  .d-num-text { fill: var(--paper); font-family: var(--font-sans); font-size: 17px; font-weight: 800; }
+
+  /* The Studio loop builds up step by step: the order is the explanation. */
+  .step { opacity: 1; }
+  .slide.is-active .step {
+    animation: step-in 420ms var(--ease) both;
+    animation-delay: calc(var(--i) * var(--step-gap) + 200ms);
+  }
+  @keyframes step-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Money slide */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 8px; }
+  .gate { list-style: none; margin: 0; padding: 0; counter-reset: gate; }
+  .gate li {
+    counter-increment: gate;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .gate li:last-child { border-bottom: 0; }
+  .gate li::before {
+    content: counter(gate);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    font-weight: 800;
+    font-size: 19px;
+    display: grid;
+    place-items: center;
+  }
+  .gate b { display: block; font-size: 23px; }
+  .gate span { font-size: 18.5px; color: var(--muted); }
+  .col-title { margin: 0 0 14px; font-size: 16px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+  .bar { display: flex; height: 58px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .bar > div { height: 100%; }
+  .seg-fee { width: 8.82%; background: var(--faint); }
+  .seg-author { width: 63.93%; background: var(--accent); }
+  .seg-platform { width: 27.25%; background: var(--muted); }
+  .legend { list-style: none; margin: 20px 0 0; padding: 0; }
+  .legend li { display: flex; align-items: center; gap: 14px; padding: 9px 0; font-size: 20px; }
+  .legend i { width: 18px; height: 18px; border-radius: 5px; flex: none; }
+  .legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .price { font-family: var(--font-display); font-size: 64px; font-weight: 600; margin: 0 0 18px; line-height: 1; }
+  .note { margin-top: 22px; padding: 16px 20px; border-radius: 14px; background: var(--accent-soft); color: var(--accent-deep); font-size: 19px; line-height: 1.4; }
+
+  /* Status slide */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .list { margin: 0; padding: 0; list-style: none; }
+  .list li { position: relative; padding: 8px 0 8px 30px; font-size: 20px; line-height: 1.38; }
+  .list li::before { content: ""; position: absolute; left: 4px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .list.gaps li::before { background: transparent; border: 2px solid var(--accent); width: 8px; height: 8px; }
+
+  /* Controls */
+  .controls { position: absolute; left: 88px; bottom: 28px; display: flex; gap: 10px; z-index: 2; }
+  .controls button {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .controls button:disabled { opacity: 0.35; cursor: default; }
+  .controls button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .counter {
+    position: absolute;
+    right: 88px;
+    bottom: 38px;
+    font-size: 18px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    z-index: 2;
+  }
+  .wordmark { position: absolute; left: 50%; bottom: 38px; transform: translateX(-50%); font-size: 16px; color: var(--faint); letter-spacing: 0.08em; z-index: 2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .slide.is-active, .progress-fill { transition: none; }
+    .slide, .slide.is-before { transform: none; }
+    .slide.is-active .step { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage" role="region" aria-roledescription="slide deck" aria-label="Lectoire project deck">
+  <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- 1. Title -->
+  <section class="slide" data-title="Lectoire" aria-roledescription="slide">
+    <p class="kicker">Open-source project · MIT licence</p>
+    <div class="title-row">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect class="bg" width="64" height="64" rx="14"/>
+        <path class="page" d="M17 12H22L28 18V41H47V52H17Z"/>
+        <path class="corner" d="M22 12H28V18Z"/>
+      </svg>
+      <h1>Lectoire</h1>
+    </div>
+    <p class="lead">Read, listen to, write and sell books in one app.</p>
+    <p class="sub" style="margin-top:18px">A book store, reader and library with an AI writing Studio and a Claude connector. One Next.js app on one MongoDB database.</p>
+    <p class="foot">Initial open-source release · 13 October 2026</p>
+  </section>
+
+  <!-- 2. Problem -->
+  <section class="slide" data-title="The problem" aria-roledescription="slide">
+    <p class="kicker">The problem</p>
+    <h2>Writing, reading and selling a book are usually separate products.</h2>
+    <p class="sub">Each hand-off between them is work the author does by hand.</p>
+    <div class="grid cols-3" style="margin-top:12px">
+      <div class="card tall">
+        <span class="tag">Write</span>
+        <h3>Chat doesn't hold the pen</h3>
+        <p>An AI chat can draft prose, but the author still copies it into a manuscript, chapter by chapter.</p>
+      </div>
+      <div class="card tall">
+        <span class="tag">Read</span>
+        <h3>Reading apps stop at reading</h3>
+        <p>They carry other people's books. Turning your own idea into a book happens somewhere else.</p>
+      </div>
+      <div class="card tall">
+        <span class="tag">Sell</span>
+        <h3>Getting paid is its own project</h3>
+        <p>A price, a checkout, refunds, payouts and printed copies each need their own setup.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Solution -->
+  <section class="slide" data-title="The solution" aria-roledescription="slide">
+    <p class="kicker">The solution</p>
+    <h2>One place for the whole life of a book.</h2>
+    <div class="grid cols-4" style="margin-top:14px">
+      <div class="card"><h3>Book Store</h3><p>Genres, featured shelves, book pages with contents and similar titles.</p></div>
+      <div class="card"><h3>Reader</h3><p>Font controls, chapter nav, highlights, saved progress and narration.</p></div>
+      <div class="card"><h3>Studio</h3><p>Claude writes chapters, covers and pictures straight into the book.</p></div>
+      <div class="card"><h3>Claude connector</h3><p>12 MCP tools from Claude Code, Claude Desktop or claude.ai.</p></div>
+      <div class="card"><h3>Plus</h3><p>$5.99 a month for the Studio and every unpriced book.</p></div>
+      <div class="card"><h3>Selling</h3><p>Authors set a price and keep 70% of what is left after card fees.</p></div>
+      <div class="card"><h3>Print</h3><p>Readers order paperbacks; orders are fulfilled from the admin portal.</p></div>
+      <div class="card"><h3>Downloads</h3><p>EPUB, PDF, DOCX, HTML, Markdown and plain text in one ZIP.</p></div>
+    </div>
+    <p class="foot">Installs from the browser as a progressive web app on phones, tablets and desktops.</p>
+  </section>
+
+  <!-- 4. Studio -->
+  <section class="slide" data-title="The Studio" aria-roledescription="slide">
+    <p class="kicker">How it works · the Studio</p>
+    <h2>In the Studio, the AI holds the pen.</h2>
+    <p class="sub">Each message runs an agent loop on the server. Its tools write real chapters into MongoDB while the preview updates beside the chat.</p>
+    <svg class="diagram" viewBox="0 0 1104 300" role="img" aria-label="Studio loop: you ask, the agent loop calls the model, tools write to the book, the live preview updates; tool results go back to the model.">
+      <defs>
+        <marker id="s-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path class="d-head accent" d="M0 0L10 5L0 10z"/>
+        </marker>
+      </defs>
+      <g class="step" style="--i:0">
+        <rect class="d-box" x="0" y="30" width="240" height="160" rx="16"/>
+        <circle class="d-num" cx="36" cy="66" r="18"/><text class="d-num-text" x="36" y="72" text-anchor="middle">1</text>
+        <text class="d-big" x="66" y="75">You ask</text>
+        <text class="d-text lg" x="24" y="122">A message, or a slash</text>
+        <text class="d-text lg" x="24" y="148">command: /cover, /image,</text>
+        <text class="d-text lg" x="24" y="174">/outline</text>
+      </g>
+      <g class="step" style="--i:1">
+        <path class="d-line accent" d="M242 110H284" marker-end="url(#s-arrow)"/>
+        <rect class="d-box strong" x="288" y="30" width="240" height="160" rx="16"/>
+        <circle class="d-num" cx="324" cy="66" r="18"/><text class="d-num-text" x="324" y="72" text-anchor="middle">2</text>
+        <text class="d-big" x="354" y="75">Agent loop</text>
+        <text class="d-text lg" x="312" y="122">Anthropic API, streamed</text>
+        <text class="d-text lg" x="312" y="148">Up to 12 rounds a turn</text>
+      </g>
+      <g class="step" style="--i:2">
+        <path class="d-line accent" d="M530 110H572" marker-end="url(#s-arrow)"/>
+        <rect class="d-box" x="576" y="30" width="240" height="160" rx="16"/>
+        <circle class="d-num" cx="612" cy="66" r="18"/><text class="d-num-text" x="612" y="72" text-anchor="middle">3</text>
+        <text class="d-big" x="642" y="75">Tools write</text>
+        <text class="d-text lg" x="600" y="122">8 tools: chapters, book</text>
+        <text class="d-text lg" x="600" y="148">details, covers, pictures</text>
+        <text class="d-text lg" x="600" y="174">saved in MongoDB</text>
+      </g>
+      <g class="step" style="--i:3">
+        <path class="d-line dashed" d="M696 192C696 262 408 262 408 196" marker-end="url(#s-arrow)"/>
+        <text class="d-label" x="552" y="290" text-anchor="middle">tool results go back to the model</text>
+      </g>
+      <g class="step" style="--i:4">
+        <path class="d-line accent" d="M818 110H860" marker-end="url(#s-arrow)"/>
+        <rect class="d-box" x="864" y="30" width="240" height="160" rx="16"/>
+        <circle class="d-num" cx="900" cy="66" r="18"/><text class="d-num-text" x="900" y="72" text-anchor="middle">4</text>
+        <text class="d-big" x="930" y="75">Live preview</text>
+        <text class="d-text lg" x="888" y="122">Server-Sent Events:</text>
+        <text class="d-text lg" x="888" y="148">delta, action, book, done</text>
+      </g>
+    </svg>
+    <p class="foot">Part of Plus · the reply is saved even if the tab closes mid-turn · the hand editor and the MCP tools use the same writers.</p>
+  </section>
+
+  <!-- 5. Architecture -->
+  <section class="slide" data-title="Architecture" aria-roledescription="slide">
+    <p class="kicker">How it works · architecture</p>
+    <h2>One server, one database, the rest optional.</h2>
+    <svg class="diagram arch" viewBox="0 0 1120 440" role="img" aria-label="Architecture: browsers, Claude MCP clients and an optional scheduler call one Next.js server. The server uses MongoDB, an S3-compatible bucket, the Anthropic API and Stripe, plus optional xAI images, a narration service and Harakumo Mail.">
+      <defs>
+        <marker id="a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path class="d-head" d="M0 0L10 5L0 10z"/>
+        </marker>
+      </defs>
+
+      <!-- clients -->
+      <rect class="d-box" x="0" y="40" width="214" height="74" rx="14"/>
+      <text class="d-title" x="18" y="72">Browser or PWA</text>
+      <text class="d-text" x="18" y="97">pages, JSON, SSE</text>
+
+      <rect class="d-box" x="0" y="183" width="214" height="74" rx="14"/>
+      <text class="d-title" x="18" y="215">Claude via MCP</text>
+      <text class="d-text" x="18" y="240">bearer token, JSON-RPC</text>
+
+      <rect class="d-box optional" x="0" y="326" width="214" height="74" rx="14"/>
+      <text class="d-title" x="18" y="358">Scheduler</text>
+      <text class="d-text" x="18" y="383">optional, CRON_SECRET</text>
+
+      <path class="d-line" d="M216 77H266" marker-end="url(#a-arrow)"/>
+      <path class="d-line" d="M216 220H266" marker-end="url(#a-arrow)"/>
+      <path class="d-line dashed" d="M216 363H266" marker-end="url(#a-arrow)"/>
+
+      <!-- server -->
+      <rect class="d-frame" x="270" y="8" width="480" height="424" rx="20"/>
+      <text class="d-frame-label" x="294" y="40">NEXT.JS 16 SERVER · NODE STANDALONE</text>
+
+      <rect class="d-box" x="294" y="60" width="206" height="112" rx="14"/>
+      <text class="d-title" x="312" y="96">Pages</text>
+      <text class="d-text" x="312" y="122">site, app, admin</text>
+      <text class="d-text" x="312" y="146">server components</text>
+
+      <rect class="d-box" x="520" y="60" width="206" height="112" rx="14"/>
+      <text class="d-title" x="538" y="96">API routes</text>
+      <text class="d-text" x="538" y="122">42 handlers</text>
+      <text class="d-text" x="538" y="146">MCP, OAuth, webhook</text>
+
+      <rect class="d-box strong" x="294" y="190" width="432" height="112" rx="14"/>
+      <text class="d-title" x="312" y="226">lib/ domain code</text>
+      <text class="d-text" x="312" y="252">auth · reading gate · Studio tools · MCP tools</text>
+      <text class="d-text" x="312" y="276">ledger and payouts · narration · storage · exports</text>
+
+      <rect class="d-box" x="294" y="320" width="432" height="90" rx="14"/>
+      <text class="d-title" x="312" y="355">Housekeeping timer · every 15 min</text>
+      <text class="d-text" x="312" y="381">resumes narrations, drawings and payouts</text>
+
+      <!-- services -->
+      <g>
+        <path class="d-line" d="M752 34H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box strong" x="830" y="10" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="40">MongoDB</text>
+        <text class="d-text" x="1102" y="40" text-anchor="end">17 collections</text>
+
+        <path class="d-line" d="M752 94H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box" x="830" y="70" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="100">Object storage</text>
+        <text class="d-text" x="1102" y="100" text-anchor="end">S3-compatible</text>
+
+        <path class="d-line" d="M752 154H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box" x="830" y="130" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="160">Anthropic API</text>
+        <text class="d-text" x="1102" y="160" text-anchor="end">Studio</text>
+
+        <path class="d-line" d="M754 214H826" marker-start="url(#a-arrow)" marker-end="url(#a-arrow)"/>
+        <rect class="d-box" x="830" y="190" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="220">Stripe</text>
+        <text class="d-text" x="1102" y="220" text-anchor="end">payments, payouts</text>
+
+        <path class="d-line dashed" d="M752 274H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box optional" x="830" y="250" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="280">xAI images</text>
+        <text class="d-text" x="1102" y="280" text-anchor="end">optional</text>
+
+        <path class="d-line dashed" d="M752 334H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box optional" x="830" y="310" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="340">Narration</text>
+        <text class="d-text" x="1102" y="340" text-anchor="end">optional</text>
+
+        <path class="d-line dashed" d="M752 394H826" marker-end="url(#a-arrow)"/>
+        <rect class="d-box optional" x="830" y="370" width="290" height="48" rx="12"/>
+        <text class="d-title" x="848" y="400">Harakumo Mail</text>
+        <text class="d-text" x="1102" y="400" text-anchor="end">optional</text>
+      </g>
+    </svg>
+    <p class="foot">Covers upload from the browser straight to the bucket with a presigned URL. Stripe calls back through a signed webhook.</p>
+  </section>
+
+  <!-- 6. Money -->
+  <section class="slide" data-title="Money" aria-roledescription="slide">
+    <p class="kicker">How it works · money</p>
+    <h2>A priced book is bought; the rest is in Plus.</h2>
+    <div class="split">
+      <div>
+        <p class="col-title">Who can read a book, checked in this order</p>
+        <ol class="gate">
+          <li><div><b>The owner</b><span>always, draft or published</span></div></li>
+          <li><div><b>A free book</b><span>anyone signed in</span></div></li>
+          <li><div><b>A priced book</b><span>only readers who bought it</span></div></li>
+          <li><div><b>Everything else</b><span>Plus members, $5.99 a month</span></div></li>
+        </ol>
+      </div>
+      <div>
+        <p class="col-title">Where a $4.99 sale goes</p>
+        <p class="price">$4.99</p>
+        <div class="bar" role="img" aria-label="Card fee 44 cents, author 3 dollars 19, Lectoire 1 dollar 36">
+          <div class="seg-fee"></div><div class="seg-author"></div><div class="seg-platform"></div>
+        </div>
+        <ul class="legend">
+          <li><i style="background:var(--faint)"></i>Card fee, estimated 2.9% + 30¢<b>$0.44</b></li>
+          <li><i style="background:var(--accent)"></i>Author, 70% of the net<b>$3.19</b></li>
+          <li><i style="background:var(--muted)"></i>Lectoire, 30% of the net<b>$1.36</b></li>
+        </ul>
+        <p class="note">Earnings clear after 30 days, then authors withdraw from $25 through Stripe Connect Express.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Stack -->
+  <section class="slide" data-title="Tech stack" aria-roledescription="slide">
+    <p class="kicker">Tech stack</p>
+    <h2>A small stack that any Node host can run.</h2>
+    <div class="grid cols-4" style="margin-top:14px">
+      <div class="card"><h3>Web</h3><p>Next.js 16 App Router, React 19, Tailwind CSS v4</p></div>
+      <div class="card"><h3>Data</h3><p>MongoDB with Mongoose 9, schemas in <span class="mono">lib/models.ts</span></p></div>
+      <div class="card"><h3>AI</h3><p>Anthropic SDK with streaming and tool use; optional xAI images</p></div>
+      <div class="card"><h3>Payments</h3><p>Stripe Checkout, subscriptions and Connect Express</p></div>
+      <div class="card"><h3>Auth</h3><p>bcrypt and a jose JWT cookie; OAuth with PKCE for connectors</p></div>
+      <div class="card"><h3>Media</h3><p>Any S3-compatible bucket, presigned uploads, sharp</p></div>
+      <div class="card"><h3>Files</h3><p>pdfkit, docx, jszip and marked out; unpdf and mammoth in</p></div>
+      <div class="card"><h3>Ship</h3><p>Standalone build in a node:22-slim container, installable PWA</p></div>
+    </div>
+    <p class="foot">Required: MongoDB, an auth secret and an Anthropic key. Everything else switches itself off when its key is missing.</p>
+  </section>
+
+  <!-- 8. Status -->
+  <section class="slide" data-title="Status and next steps" aria-roledescription="slide">
+    <p class="kicker">Status and next steps</p>
+    <h2>Working end to end, with gaps to close first.</h2>
+    <div class="two">
+      <div class="card">
+        <p class="col-title">In the code today</p>
+        <ul class="list">
+          <li>Store, reader, library, highlights and saved progress</li>
+          <li>Studio with 8 tools, document upload and voice dictation</li>
+          <li>MCP server with personal tokens and OAuth sign-in</li>
+          <li>Plus, book sales, print orders and author payouts</li>
+          <li>Narration, the housekeeping sweep and six export formats</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="col-title">Next: gaps found in the code</p>
+        <ul class="list gaps">
+          <li>Apply the reading gate to MCP <span class="mono">get_book</span> and <span class="mono">read_chapter</span></li>
+          <li>Keep the newest Studio messages once a project passes 80</li>
+          <li>Base admin payout figures on the ledger</li>
+          <li>Reverse print royalties on refunds and disputes</li>
+          <li>Password reset, email verification, sign-in throttling, tests</li>
+        </ul>
+      </div>
+    </div>
+    <p class="foot">The full list is in docs/SYSTEM-DESIGN.md under Known gaps.</p>
+  </section>
+
+  <nav class="controls" aria-label="Slide navigation">
+    <button type="button" id="prev" aria-label="Previous slide">&#8592;</button>
+    <button type="button" id="next" aria-label="Next slide">&#8594;</button>
+  </nav>
+  <div class="wordmark" aria-hidden="true">Lectoire</div>
+  <div class="counter" id="counter" aria-live="polite">1 / 8</div>
+</div>
+
+<script>
+(function () {
+  var stage = document.getElementById("stage");
+  var slides = Array.prototype.slice.call(stage.querySelectorAll(".slide"));
+  var fill = document.getElementById("progress");
+  var counter = document.getElementById("counter");
+  var prevBtn = document.getElementById("prev");
+  var nextBtn = document.getElementById("next");
+  var current = 0;
+
+  function fit() {
+    var scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.setProperty("--scale", String(scale));
+  }
+
+  function show(index, fromHash) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach(function (slide, n) {
+      var active = n === current;
+      slide.classList.toggle("is-active", active);
+      slide.classList.toggle("is-before", n < current);
+      slide.setAttribute("aria-hidden", active ? "false" : "true");
+      slide.setAttribute("aria-label", (n + 1) + " of " + slides.length + ": " + slide.getAttribute("data-title"));
+      if (active) slide.removeAttribute("inert"); else slide.setAttribute("inert", "");
+    });
+    fill.style.width = ((current + 1) / slides.length) * 100 + "%";
+    counter.textContent = (current + 1) + " / " + slides.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    if (!fromHash) {
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* file:// in some browsers */ }
+    }
+  }
+
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  function fromHash() {
+    var n = parseInt(String(location.hash).replace("#", ""), 10);
+    return Number.isFinite(n) ? n - 1 : 0;
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+      case "PageDown":
+        next(); break;
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "PageUp":
+        prev(); break;
+      case " ":
+      case "Spacebar":
+        if (e.shiftKey) prev(); else next();
+        break;
+      case "Home":
+        show(0); break;
+      case "End":
+        show(slides.length - 1); break;
+      default:
+        return;
+    }
+    e.preventDefault();
+  });
+
+  prevBtn.addEventListener("click", function (e) { e.stopPropagation(); prev(); });
+  nextBtn.addEventListener("click", function (e) { e.stopPropagation(); next(); });
+
+  // Click or tap anywhere: the left third goes back, the rest goes forward.
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("button, a")) return;
+    if (e.clientX < window.innerWidth * 0.3) prev(); else next();
+  });
+
+  window.addEventListener("resize", fit);
+  window.addEventListener("hashchange", function () { show(fromHash(), true); });
+
+  fit();
+  show(fromHash(), true);
+})();
+</script>
+</body>
+</html>
