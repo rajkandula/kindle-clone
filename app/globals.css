@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-raised: #efede7;
+  --color-ink: #1c1917;
+  --color-muted: #57534e;
+  --color-faint: #a29d96;
+  --color-line: #e6e3dc;
+  --color-accent: #b45309;
+  --color-accent-deep: #92400e;
+  --color-accent-soft: #fdf3e7;
+
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --shadow-book: 0 1px 2px rgb(28 25 23 / 0.12), 0 4px 12px rgb(28 25 23 / 0.14),
+    0 12px 28px rgb(28 25 23 / 0.12);
+  --shadow-book-sm: 0 1px 2px rgb(28 25 23 / 0.1), 0 3px 8px rgb(28 25 23 / 0.12);
+  --shadow-pop: 0 2px 8px rgb(28 25 23 / 0.08), 0 12px 32px rgb(28 25 23 / 0.14);
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #f5e0c8;
+}
+
+/* Tailwind v4 preflight leaves buttons with the default cursor */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- scrollbars ---------- */
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d2c9 transparent;
+}
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #d6d2c9;
+  border-radius: 3px;
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- book cover 3D feel ---------- */
+
+.book-tilt {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.book-tilt:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: var(--shadow-book);
+}
+
+/* spine highlight on generated covers */
+.book-spine::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 0.18),
+    rgb(255 255 255 / 0.12) 55%,
+    rgb(0 0 0 / 0.05)
+  );
+  border-radius: inherit;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  pointer-events: none;
+}
+
+/* ---------- markdown (chat) ---------- */
+
+.prose-ink {
+  font-size: 0.925rem;
+  line-height: 1.65;
+  word-break: break-word;
+}
+.prose-ink > *:first-child {
+  margin-top: 0;
+}
+.prose-ink > *:last-child {
+  margin-bottom: 0;
+}
+.prose-ink p {
+  margin: 0.6em 0;
+}
+.prose-ink h1,
+.prose-ink h2,
+.prose-ink h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 1.1em 0 0.45em;
+  line-height: 1.25;
+}
+.prose-ink h1 {
+  font-size: 1.28em;
+}
+.prose-ink h2 {
+  font-size: 1.16em;
+}
+.prose-ink h3 {
+  font-size: 1.05em;
+}
+.prose-ink ul,
+.prose-ink ol {
+  margin: 0.55em 0;
+  padding-left: 1.4em;
+}
+.prose-ink ul {
+  list-style: disc;
+}
+.prose-ink ol {
+  list-style: decimal;
+}
+.prose-ink li {
+  margin: 0.25em 0;
+}
+.prose-ink a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-ink blockquote {
+  border-left: 3px solid var(--color-line);
+  padding-left: 0.9em;
+  margin: 0.7em 0;
+  color: var(--color-muted);
+  font-style: italic;
+}
+.prose-ink code {
+  background: var(--color-raised);
+  border-radius: 5px;
+  padding: 0.12em 0.35em;
+  font-size: 0.86em;
+}
+.prose-ink pre {
+  background: #201d1a;
+  color: #ece9e4;
+  border-radius: 12px;
+  padding: 0.9em 1.1em;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  font-size: 0.85em;
+}
+.prose-ink pre code {
+  background: transparent;
+  padding: 0;
+}
+.prose-ink table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  font-size: 0.92em;
+}
+.prose-ink th,
+.prose-ink td {
+  border: 1px solid var(--color-line);
+  padding: 0.4em 0.7em;
+  text-align: left;
+}
+.prose-ink th {
+  background: var(--color-raised);
+}
+.prose-ink hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 1.2em 0;
+}
+
+/* ---------- reader typography ---------- */
+
+.reading-prose {
+  font-family: var(--font-display);
+  font-size: var(--reader-size, 1.16rem);
+  line-height: 1.85;
+  color: #292524;
+}
+.reading-prose p {
+  margin: 0 0 1.15em;
+}
+.reading-prose p + p {
+  text-indent: 0;
+}
+.reading-prose h1,
+.reading-prose h2,
+.reading-prose h3 {
+  font-weight: 600;
+  margin: 1.6em 0 0.7em;
+  line-height: 1.3;
+}
+.reading-prose h1 {
+  font-size: 1.5em;
+}
+.reading-prose h2 {
+  font-size: 1.3em;
+}
+.reading-prose h3 {
+  font-size: 1.12em;
+}
+.reading-prose blockquote {
+  border-left: 3px solid #d9c9a8;
+  padding-left: 1em;
+  margin: 1.2em 0;
+  font-style: italic;
+  color: var(--color-muted);
+}
+.reading-prose em {
+  font-style: italic;
+}
+.reading-prose hr {
+  border: none;
+  text-align: center;
+  margin: 2em 0;
+}
+.reading-prose hr::after {
+  content: "⁂";
+  color: var(--color-faint);
+  font-size: 1.1em;
+  letter-spacing: 0.4em;
+}
+
+/* ---------- reader text highlights (CSS Custom Highlight API) ---------- */
+
+::highlight(ember-amber) {
+  background-color: #fde04766;
+}
+::highlight(ember-green) {
+  background-color: #86efac66;
+}
+::highlight(ember-rose) {
+  background-color: #f9a8d466;
+}
+/* The sentence currently being read aloud */
+::highlight(ember-reading) {
+  background-color: #b4530926;
+  color: inherit;
+}
+::highlight(ember-blue) {
+  background-color: #93c5fd66;
+}
+
+/* ---------- misc ---------- */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.typing-dot {
+  animation: pulseDot 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
